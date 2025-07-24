@@ -19,7 +19,7 @@
    ```
 2. 克隆本项目
    ```bash
-   git clone https://github.com/your-username/Comfyui-BaiduTranslate.git
+   git clone https://github.com/qetfgh/Comfyui-BaiduTranslate.git
    ```
    或者下载并解压项目文件到该目录
 3. 安装依赖
