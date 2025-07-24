@@ -6,19 +6,13 @@ import json
 import time
 
 
-class BaiduTranslateNode:
-    def __init__(self):
-        # 使用当前目录保存配置文件
-        self.config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "baidu_config.json")
-        self.config = self.load_config()
-        
+class BaiduTranslateClipTextEncodeNode:
     @classmethod
     def INPUT_TYPES(cls):
         return {
             "required": {
                 "text": ("STRING", {"multiline": True}),
-            },
-            "optional": {
+                "clip": ("CLIP", ),
                 "from_lang": ([
                     "auto", "zh", "en", "jp", 
                     "kor", "fra", "ru", "de", 
@@ -33,11 +27,18 @@ class BaiduTranslateNode:
                 "secret_key": ("STRING", {"default": ""}),
             }
         }
-    
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("translated_text",)
-    FUNCTION = "translate"
-    CATEGORY = "qetfgh/translation"
+
+    RETURN_TYPES = ("CONDITIONING",)
+    FUNCTION = "encode"
+    CATEGORY = "qetfgh/txt"
+
+    def __init__(self):
+        # 使用当前目录保存配置文件
+        config_file = "baidu_config.json"
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        self.config_path = os.path.join(current_dir, config_file)
+        self.config = self.load_config()
+
     def load_config(self):
         """加载百度翻译配置"""
         default_config = {"app_id": "", "secret_key": ""}
@@ -57,38 +58,37 @@ class BaiduTranslateNode:
         self.config = config
         return config
 
-    def translate(self, text, from_lang="auto", to_lang="en", app_id="", secret_key=""):
-        # 如果提供了app_id和secret_key，则保存配置
+    def translate(self, text, from_lang="auto", to_lang="en", 
+                  app_id="", secret_key=""):
         if app_id and secret_key:
             self.save_config(app_id, secret_key)
-            # 更新当前实例的配置
             self.config = {"app_id": app_id, "secret_key": secret_key}
-        # 检查是否已配置密钥
         elif not self.config.get("app_id") or not self.config.get("secret_key"):
-            return ("⚠️ 请先配置百度翻译密钥！\n请在app_id和secret_key字段中输入您的百度翻译API密钥。\n\n注册地址: https://fanyi-api.baidu.com/product/113",)
-        
-        # 获取当前使用的配置
+            error_msg = ("⚠️ 请先配置百度翻译密钥！\n请在app_id和secret_key字段中输入您的"
+                         "百度翻译API密钥。\n\n注册地址: "
+                         "https://fanyi-api.baidu.com/product/113")
+            raise Exception(error_msg)
+
         current_app_id = self.config.get("app_id") or app_id
         current_secret_key = self.config.get("secret_key") or secret_key
-        
-        # 再次检查配置是否有效
+
         if not current_app_id or not current_secret_key:
-            return ("⚠️ 请先配置百度翻译密钥！\n请在app_id和secret_key字段中输入您的百度翻译API密钥。\n\n注册地址: https://fanyi-api.baidu.com/product/113",)
-        
-        # 检查文本是否为空
+            error_msg = ("⚠️ 请先配置百度翻译密钥！\n请在app_id和secret_key字段中输入您的"
+                         "百度翻译API密钥。\n\n注册地址: "
+                         "https://fanyi-api.baidu.com/product/113")
+            raise Exception(error_msg)
+
         if not text.strip():
-            return ("",)
-        
-        # 长文本分块处理（百度API限制6000字节/次）
+            return ""
+
         chunks = self.split_text(text, 2000)
         results = []
-        
+
         for chunk in chunks:
-            # 百度API签名生成
             salt = str(random.randint(32768, 65536))
             sign_str = current_app_id + chunk + salt + current_secret_key
             sign = hashlib.md5(sign_str.encode()).hexdigest()
-            
+
             params = {
                 "q": chunk,
                 "from": from_lang,
@@ -97,35 +97,34 @@ class BaiduTranslateNode:
                 "salt": salt,
                 "sign": sign
             }
-            
+
             try:
                 response = requests.get(
                     "https://api.fanyi.baidu.com/api/trans/vip/translate",
                     params=params,
-                    timeout=15
+                    timeout=15,
                 )
                 result = response.json()
-                
+
                 if "trans_result" in result:
                     translated = " ".join([res["dst"] for res in result["trans_result"]])
                     results.append(translated)
                 else:
                     error_msg = result.get("error_msg", "未知错误")
-                    return (f"翻译错误: {error_msg}",)
-                
-                # 遵守免费版QPS限制
+                    raise Exception(f"翻译错误: {error_msg}")
+
                 time.sleep(1.1)
-                
+
             except Exception as e:
-                return (f"翻译失败: {str(e)}",)
-        
-        return (" ".join(results),)
-    
+                raise Exception(f"翻译失败: {str(e)}")
+
+        return " ".join(results)
+
     def split_text(self, text, max_length=2000):
         """将长文本分割为适合API处理的块"""
         if len(text) <= max_length:
             return [text]
-        
+
         chunks = []
         while text:
             if len(text) <= max_length:
@@ -137,42 +136,29 @@ class BaiduTranslateNode:
                 split_index = text.rfind(" ", 0, max_length)
             if split_index == -1:
                 split_index = max_length
-                
+
             chunks.append(text[:split_index+1])
             text = text[split_index+1:]
-        
+
         return chunks
 
-
-class BaiduConfigNode:
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "app_id": ("STRING", {"default": ""}),
-                "secret_key": ("STRING", {"default": ""}),
-            }
-        }
-    
-    RETURN_TYPES = ()
-    FUNCTION = "save_config"
-    CATEGORY = "tools/translation"
-    OUTPUT_NODE = True
-
-    def save_config(self, app_id, secret_key):
-        # 使用翻译节点保存配置
-        translator = BaiduTranslateNode()
-        translator.save_config(app_id, secret_key)
-        return ()
+    def encode(self, text, clip, from_lang="auto", to_lang="en", 
+               app_id="", secret_key=""):
+        # 先进行翻译
+        translated_text = self.translate(text, from_lang, to_lang, 
+                                         app_id, secret_key)
+        
+        # 对翻译后的文本进行编码
+        tokens = clip.tokenize(translated_text)
+        cond, pooled = clip.encode_from_tokens(tokens, return_pooled=True)
+        return ([[cond, {"pooled_output": pooled}]], )
 
 
 # 节点映射
 NODE_CLASS_MAPPINGS = {
-    "BaiduTranslate": BaiduTranslateNode,
-    "BaiduConfig": BaiduConfigNode
+    "BaiduTranslateClipTextEncode": BaiduTranslateClipTextEncodeNode
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "BaiduTranslate": "🔤 百度翻译",
-    "BaiduConfig": "⚙️ 百度翻译配置"
+    "BaiduTranslateClipTextEncode": "CLIP文本编码(百度翻译)"
 }

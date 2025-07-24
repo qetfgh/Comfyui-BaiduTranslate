@@ -1,6 +1,6 @@
-# ComfyUI-BaiduTranslate
+# Comfyui-BaiduTranslate nodes
 
-这是一个基于百度翻译API的ComfyUI自fony节点，可以将文本翻译成多种语言，并直接连接到CLIP文本编码器节点。
+这是一个基于百度翻译API的ComfyUI自定义节点，可以将文本翻译成多种语言，并直接连接到CLIP文本编码器节点。
 
 ## 功能特点
 
@@ -9,6 +9,7 @@
 - 支持长文本分段翻译
 - 翻译结果可直接连接至CLIP Text Encode节点
 - 友好的用户提示界面
+- 提供集成翻译和编码的一体化节点
 
 ## 安装方法
 
@@ -18,7 +19,7 @@
    ```
 2. 克隆本项目
    ```bash
-   git clone https://github.com/qetfgh/Comfyui-BaiduTranslate.git
+   git clone https://github.com/your-username/Comfyui-BaiduTranslate.git
    ```
    或者下载并解压项目文件到该目录
 3. 安装依赖
@@ -42,6 +43,8 @@
 4. 设置源语言和目标语言
 5. 将翻译结果连接到CLIP Text Encode节点或其他需要文本输入的节点
 
+![百度翻译连接示意图](./README.assets/%E7%99%BE%E5%BA%A6%E7%BF%BB%E8%AF%91%E8%BF%9E%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE-1753339527487-3.png)
+
 ### 方法二：使用专用配置节点
 
 1. 在ComfyUI中添加"⚙️ 百度翻译配置"节点
@@ -49,6 +52,17 @@
 3. 运行一次该节点以保存配置
 4. 添加"🔤 百度翻译"节点，无需再次输入密钥
 5. 输入要翻译的文本并设置语言选项
+
+### 方法三：使用一体化翻译编码节点（推荐用于工作流简化）
+
+1. 在ComfyUI中添加"CLIP文本编码(百度翻译)"节点
+2. 连接模型加载节点到`clip`输入端口
+3. 在`app_id`和`secret_key`字段中输入您的百度翻译API密钥
+4. 输入要翻译的文本到`text`字段
+5. 设置源语言和目标语言
+6. 节点将直接输出CONDITIONING数据，可直接连接到KSampler等节点
+
+![CLIP文本编码(百度翻译)](./README.assets/CLIP%E6%96%87%E6%9C%AC%E7%BC%96%E7%A0%81(%E7%99%BE%E5%BA%A6%E7%BF%BB%E8%AF%91).png)
 
 ## 节点说明
 
@@ -77,12 +91,23 @@
 
 专门用于配置和保存APP ID和密钥的节点。
 
+### CLIP文本编码(百度翻译)
+
+集成翻译和CLIP编码功能的一体化节点，支持以下参数：
+- `text`: 要翻译的文本（多行输入）
+- `clip`: CLIP模型输入
+- `from_lang`: 源语言（默认auto自动检测）
+- `to_lang`: 目标语言（默认en英语）
+- `app_id`: 百度翻译APP ID
+- `secret_key`: 百度翻译密钥
+
 ## 使用提示
 
 1. 密钥配置会自动保存在插件目录下的`baidu_config.json`文件中
 2. 如果未配置密钥，节点会显示友好的提示信息，指导您如何配置
 3. 支持长文本翻译，系统会自动分段处理
 4. 翻译结果可以直接连接到CLIP Text Encode节点用于图像生成
+5. 一体化节点简化了工作流，无需单独连接翻译节点和CLIP编码节点
 
 ## 常见问题
 
@@ -106,6 +131,11 @@
 - CLIP Text Encode (Prompt)
 - Save Text File
 - 其他自定义文本处理节点
+
+一体化节点直接输出CONDITIONING数据，可以连接到以下节点：
+- KSampler
+- ConditioningCombine
+- 其他接受CONDITIONING输入的节点
 
 ## 支持语言
 

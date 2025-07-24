@@ -1,0 +1,13 @@
+[project]
+name = "comfyui-baidutranslate"
+description = "Includes Baidu Translation node and CLIP text encoder (Baidu Translation) node"
+version = "1.0.0"
+license = { file = "LICENSE" }
+
+[project.urls]
+Repository = "https://github.com/qetfgh/Comfyui-BaiduTranslate"
+
+[tool.comfy]
+PublisherId = "qetfgh"
+DisplayName = "Comfyui-BaiduTranslate"
+Icon = ""
