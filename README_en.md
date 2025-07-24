@@ -43,9 +43,8 @@ This is a custom ComfyUI node based on Baidu Translate API that can translate te
 4. Set the source and target languages
 5. Connect the translation result to the CLIP Text Encode node or other nodes that require text input
 
+![百度翻译连接示意图](https://github.com/user-attachments/assets/0218e91a-d475-4346-901b-4ab5f6ffed12)
 
-
-![百度翻译连接示意图](./%E7%99%BE%E5%BA%A6%E7%BF%BB%E8%AF%91%E8%BF%9E%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE.png)
 
 ### Method 2: Use dedicated configuration node
 
@@ -64,9 +63,8 @@ This is a custom ComfyUI node based on Baidu Translate API that can translate te
 5. Set the source and target languages
 6. The node will directly output CONDITIONING data that can be connected to KSampler and other nodes
 
+![Uploading CLIP文本编码(百度翻译).png…]()
 
-
-![CLIP文本编码(百度翻译)](./CLIP%E6%96%87%E6%9C%AC%E7%BC%96%E7%A0%81(%E7%99%BE%E5%BA%A6%E7%BF%BB%E8%AF%91).png)
 
 ## Node Descriptions
 
