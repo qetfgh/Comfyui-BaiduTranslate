@@ -43,7 +43,8 @@
 4. 设置源语言和目标语言
 5. 将翻译结果连接到CLIP Text Encode节点或其他需要文本输入的节点
 
-![百度翻译连接示意图](./README.assets/%E7%99%BE%E5%BA%A6%E7%BF%BB%E8%AF%91%E8%BF%9E%E6%8E%A5%E7%A4%BA%E6%84%8F%E5%9B%BE-1753339527487-3.png)
+![百度翻译连接示意图](https://github.com/user-attachments/assets/845e6576-4f53-46ec-9f53-d5337dd05e71)
+
 
 ### 方法二：使用专用配置节点
 
@@ -62,7 +63,8 @@
 5. 设置源语言和目标语言
 6. 节点将直接输出CONDITIONING数据，可直接连接到KSampler等节点
 
-![CLIP文本编码(百度翻译)](./README.assets/CLIP%E6%96%87%E6%9C%AC%E7%BC%96%E7%A0%81(%E7%99%BE%E5%BA%A6%E7%BF%BB%E8%AF%91).png)
+![CLIP文本编码(百度翻译)](https://github.com/user-attachments/assets/343a0d26-1811-4bd8-9d98-63a182e520b8)
+
 
 ## 节点说明
 
