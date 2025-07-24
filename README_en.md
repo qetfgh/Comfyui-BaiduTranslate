@@ -19,7 +19,7 @@ This is a custom ComfyUI node based on Baidu Translate API that can translate te
    ```
 2. Clone this repository
    ```bash
-   git clone https://github.com/your-username/Comfyui-BaiduTranslate.git
+   git clone https://github.com/qetfgh/Comfyui-BaiduTranslate.git
    ```
    Or download and extract the project files to this directory
 3. Install dependencies
